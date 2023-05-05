@@ -1,3 +1,10 @@
+#ifndef CARD_HPP
+#define CARD_HPP
+
+
+
+
+
 #include<iostream>
 class card
 {
@@ -11,3 +18,4 @@ class card
     private:
     std::string face_, suit_;
 };
+#endif 

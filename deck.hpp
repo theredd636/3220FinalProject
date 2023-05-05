@@ -8,9 +8,11 @@ class deck
     deck();
     void printDeck();
     void shuffle(int r);
+    int getPosition();
+    card deal();
     private:
     std::vector<card> cards_;
-    int post ; // this is the current spot of the deck
+    int Position ; // this is the current spot of the deck
 };
         
 #endif        
