@@ -6,6 +6,7 @@ game::game(){
 }
 void game::blackJack(){
     bool over=false; 
+    bool handnotHandled1=false,handnotHandled2=false;
     Player player;
     Dealer dealer;
     int input;
@@ -16,7 +17,7 @@ void game::blackJack(){
     {
         //begin blackJack game
         
-        
+        bool splitf=false;//flag for handeling if player split
         if(D.getPosition() > 40)
         {
             std::cout << "***********************************" <<std::endl;
@@ -33,7 +34,6 @@ void game::blackJack(){
         temp = D.deal();
         std::cout << "Dealer was dealt a " << temp.to_string() <<std::endl; // dealers first card
         dealer.setHand(temp);
-
         temp = D.deal();
         std::cout << "Player was dealt a " << temp.to_string() << std::endl; // players second card
         player.setHand(temp);
@@ -73,6 +73,7 @@ void game::blackJack(){
                 }
                 if(input == 4)
                 {
+                    splitf=true;
                     std::pair<std::vector<card>, std::vector<card>> hands = ruleSplit(player);
                     std::vector<card> hand1,hand2;
                     hand1=hands.first;
@@ -85,7 +86,74 @@ void game::blackJack(){
                         player.setHand2(c);
                     }
                     std::cout<<"Player Now has 2 hands"<<std::endl;
-                    std::cout<<"hand 1 :"<<player.getHand(false)<<std::endl;
+                    std::cout<<"hand 1: "<<player.getHand(false)<<std::endl;
+                    // handle hand 1
+                    player.sethandValue2();
+                    player.sethandValue();
+                    bool OH1=false;
+                    bool OH2=false;
+                    while (OH1!=true && player.gethandValue()<=21)
+                    {
+                        
+                        std::cout<<"Player Currently Has "<<player.gethandValue()<<std::endl;
+                        std::cout << "----------"  <<std::endl;
+                        std::cout << "Hit == 1" << std::endl;
+                        std::cout << "double == 2" << std::endl;
+                        std::cout << "Stand == 3" << std::endl;
+                        std::cin>>input;
+                        if(input == 1)
+                        {
+                            temp=D.deal();
+                            std::cout<< "\nPlayer was delt a "<<temp.to_string()<<std::endl;
+                            player.setHand(temp);
+                        }
+
+                        if(input == 2)
+                        {
+                            std::cout<<"Double\n"<<std::endl;
+                            risk=risk*2;
+                            std::cout<< "\nPlayer was delt a "<<temp.to_string()<<std::endl;
+                            player.setHand(temp);
+                        }
+
+                        if(input == 3)
+                        {
+                            OH1=true;
+                        }
+                        player.sethandValue();
+                        
+                    }
+                    // handle hand 2
+                    std::cout<<player.getHand(true)<<std::endl;
+                    while(OH2!=true && player.gethandValue2()<=21){
+                        std::cout<<"Player Currently Has "<<player.gethandValue2()<<std::endl;
+                        std::cout << "----------"  <<std::endl;
+                        std::cout << "Hit == 1" << std::endl;
+                        std::cout << "double == 2" << std::endl;
+                        std::cout << "Stand == 3" << std::endl;
+                        std::cin>>input;
+                        if(input == 1)
+                        {
+                            temp=D.deal();
+                            std::cout<< "\nPlayer was delt a "<<temp.to_string()<<std::endl;
+                            player.setHand2(temp);
+                        }
+
+                        if(input == 2)
+                        {
+                            std::cout<<"Double\n"<<std::endl;
+                            risk=risk*2;
+                            std::cout<< "\nPlayer was delt a "<<temp.to_string()<<std::endl;
+                            player.setHand2(temp);
+                        }
+
+                        if(input == 3)
+                        {
+                            OH2=true;
+                        }
+                        player.sethandValue2();
+                    }
+                    over=true;
                 }
 
             }else{
@@ -96,26 +164,28 @@ void game::blackJack(){
                 std::cout << "Stand == 3" << std::endl;
                 std::cin>>input;
             }
-            if(input == 1)
-            {
-                temp=D.deal();
-                std::cout<< "\nPlayer was delt a "<<temp.to_string()<<std::endl;
-                player.setHand(temp);
-            }
+            if(splitf==false){
+                if(input == 1)
+                {
+                    temp=D.deal();
+                    std::cout<< "\nPlayer was delt a "<<temp.to_string()<<std::endl;
+                    player.setHand(temp);
+                }
 
-            if(input == 2)
-            {
-                std::cout<<"Double\n"<<std::endl;
-                risk=risk*2;
-                std::cout<< "\nPlayer was delt a "<<temp.to_string()<<std::endl;
-                player.setHand(temp);
-            }
+                if(input == 2)
+                {
+                    std::cout<<"Double\n"<<std::endl;
+                    risk=risk*2;
+                    std::cout<< "\nPlayer was delt a "<<temp.to_string()<<std::endl;
+                    player.setHand(temp);
+                }
 
-            if(input == 3)
-            {
-                over=true;
+                if(input == 3)
+                {
+                    over=true;
+                }
+                player.sethandValue();
             }
-            player.sethandValue();
         }
         while(dealer.gethandValue()<=17 && player.gethandValue()<21){
             temp=D.deal();
@@ -124,39 +194,103 @@ void game::blackJack(){
             dealer.sethandValue();
         }
         //handle who wins and who loses
-        if(player.gethandValue()>21 && dealer.gethandValue()<21){
-            std::cout<<"Player Bust"<<std::endl;
-            std::cout<<"Player had "<<player.getHand(true)<<"\n value: "<<player.gethandValue()<<std::endl;
-            std::cout<<"Dealer had "<<dealer.getHand()<<"\n value: "<<dealer.gethandValue()<<std::endl;
-            player.setChips(player.getChips()-risk);
-        }else if(player.gethandValue()<21 && dealer.gethandValue()>21){
-            std::cout<<"Dealer Bust"<<std::endl;
-            std::cout<<"Player had "<<player.getHand(true)<<"\n value: "<<player.gethandValue()<<std::endl;
-            std::cout<<"Dealer had "<<dealer.getHand()<<"\n value: "<<dealer.gethandValue()<<std::endl;
-            player.setChips(player.getChips()+risk);
+        if(splitf==false){
+            if(player.gethandValue()>21 && dealer.gethandValue()<21){
+                std::cout<<"Player Bust"<<std::endl;
+                player.setChips(player.getChips()-risk);
+            }else if(player.gethandValue()<21 && dealer.gethandValue()>21){
+                std::cout<<"Dealer Bust"<<std::endl;
+                player.setChips(player.getChips()+risk);
+            }
+            else if(player.gethandValue()>21 && dealer.gethandValue()>21){
+                std::cout<<"Dealer and Player Bust (PUSH)"<<std::endl;
+                risk=0;
+                player.setChips(player.getChips()+risk);
+            }else if(player.gethandValue()<dealer.gethandValue()){
+                std::cout<<"Dealer wins"<<std::endl;
+                player.setChips(player.getChips()-risk);
+            }else if(player.gethandValue()>dealer.gethandValue()){
+                std::cout<<"Player wins"<<std::endl;
+                player.setChips(player.getChips()+risk);
+            }else if(player.gethandValue()==dealer.gethandValue()){
+                std::cout<<"PUSH"<<std::endl;
+            }
+            std::cout<<"Player had "<<player.getHand(false)<<"\n value: "<<player.gethandValue()<<std::endl;
+        }else{
+            std::cout<<"For hand 1:"<<std::endl;
+            if(dealer.gethandValue()>21){
+                std::cout<<"Dealer Bust"<<std::endl;
+                if(player.gethandValue()>21){
+                    std::cout<<"Player Bust hand 1"<<std::endl;
+                    handnotHandled1=true;
+                }else{
+                    player.setChips(player.getChips()+risk);
+                    dealer.setChips(dealer.getChips()-risk);
+                    handnotHandled1=true;
+                }
+                if(player.gethandValue2()>21){
+                    std::cout<<"For hand 2:"<<std::endl;
+                    std::cout<<"Player Bust hand 2"<<std::endl;
+                    handnotHandled2=true;
+                }else{
+                    player.setChips(player.getChips()+risk);
+                    dealer.setChips(dealer.getChips()-risk);
+                    handnotHandled1=true;
+                }
+            }else{
+                if(handnotHandled1==false){
+                    if(player.gethandValue()>21){
+                        std::cout<<"Player hand 1 Bust"<<std::endl;
+                        player.setChips(player.getChips()-risk);
+                        dealer.setChips(dealer.getChips()+risk);
+                    }else{      
+                        if(player.gethandValue()<dealer.gethandValue()){
+                            std::cout<<"Dealer wins hand 1"<<std::endl;
+                            player.setChips(player.getChips()-risk);
+                            dealer.setChips(dealer.getChips()+risk);
+                        }   
+                        if(player.gethandValue()>dealer.gethandValue()){
+                            std::cout<<"Player wins hand 1"<<std::endl;
+                            player.setChips(player.getChips()+risk);
+                            dealer.setChips(dealer.getChips()-risk);
+                        }
+                        if(player.gethandValue()==dealer.gethandValue()){
+                            std::cout<<"Hand 1 PUSH"<<std::endl;
+                        }
+                    }
+                }
+                if(handnotHandled2==false){
+                    std::cout<<"For hand 2:"<<std::endl;
+                    if(player.gethandValue2()>21){
+                        std::cout<<"Player hand 2 Bust"<<std::endl;
+                        player.setChips(player.getChips()-risk);
+                        dealer.setChips(dealer.getChips()+risk);
+                    }else{      
+                        if(player.gethandValue2()<dealer.gethandValue()){
+                            std::cout<<"Dealer wins hand 2"<<std::endl;
+                            player.setChips(player.getChips()-risk);
+                            dealer.setChips(dealer.getChips()+risk);
+                        }   
+                        if(player.gethandValue2()>dealer.gethandValue()){
+                            std::cout<<"Player wins hand 2"<<std::endl;
+                            player.setChips(player.getChips()+risk);
+                            dealer.setChips(dealer.getChips()-risk);
+                        }
+                        if(player.gethandValue2()==dealer.gethandValue()){
+                            std::cout<<"Hand 2 PUSH"<<std::endl;
+                        }
+                    }
+                }
+            }
+            std::cout<<"Player had "<<player.getHand(true)<<"\n Hand 1 value: "<<player.gethandValue()<<"\n Hand 2 value: "<<player.gethandValue2()<<std::endl;
         }
-        else if(player.gethandValue()>21 && dealer.gethandValue()>21){
-            std::cout<<"Dealer and Player Bust (PUSH)"<<std::endl;
-            std::cout<<"Player had "<<player.getHand(true)<<"\n value: "<<player.gethandValue()<<std::endl;
-            std::cout<<"Dealer had "<<dealer.getHand()<<"\n value: "<<dealer.gethandValue()<<std::endl;
-            risk=0;
-            player.setChips(player.getChips()+risk);
-        }else if(player.gethandValue()<dealer.gethandValue()){
-            std::cout<<"Dealer wins"<<std::endl;
-            std::cout<<"Player had "<<player.getHand(true)<<"\n value: "<<player.gethandValue()<<std::endl;
-            std::cout<<"Dealer had "<<dealer.getHand()<<"\n value: "<<dealer.gethandValue()<<std::endl;
-            player.setChips(player.getChips()-risk);
-        }else if(player.gethandValue()>dealer.gethandValue()){
-            std::cout<<"Player wins"<<std::endl;
-            std::cout<<"Player had "<<player.getHand(true)<<"\n value: "<<player.gethandValue()<<std::endl;
-            std::cout<<"Dealer had "<<dealer.getHand()<<"\n value: "<<dealer.gethandValue()<<std::endl;
-            player.setChips(player.getChips()+risk);
-        }
+        std::cout<<"Dealer had "<<dealer.getHand()<<"\n value: "<<dealer.gethandValue()<<std::endl;
         //reset hands
         player.emptyHand();
         dealer.emptyHand();   
         over=false;
     }
+    std::cout<<"Game over Either Player or Dealer ran out of mone"<<std::endl;
 }
 
 std::pair<std::vector<card>, std::vector<card>>  game::ruleSplit(Player P){

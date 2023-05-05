@@ -52,3 +52,13 @@ void Player::emptyHand(){
     Phand_.clear();
     P2hand_.clear();
 }
+int Player::gethandValue2(){
+    return P2handValue;
+}
+void Player::sethandValue2(){
+    int total=0;
+    for(card c :P2hand_){
+        total+=c.getValue();
+    }
+    P2handValue=total;
+}
