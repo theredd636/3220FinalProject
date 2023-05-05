@@ -1,6 +1,7 @@
 #include <iostream>
-#include "Person.hpp"
-class Dealer :public person{
+#include <vector>
+#include "card.hpp"
+class Dealer {
     public:
     std::string getHand();
     card getCard(int index);
@@ -9,8 +10,9 @@ class Dealer :public person{
     void setChips(int num);
     int gethandValue();
     void sethandValue();
+    void emptyHand();
     private:
-    std::vector<card> hand_;
-    int handValue;
-    int chips;
+    std::vector<card>Dhand_;
+    int DhandValue;
+    int Dchips;
 };
