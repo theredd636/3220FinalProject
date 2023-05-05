@@ -1,8 +1,7 @@
-#include "deck.hpp"
+
+#include "game.hpp"
 int main(void)
 {
-   deck d;
-   d.printDeck();
-   puts("");
-   d.shuffle(5);
+   game g;
+   g.blackJack();  
 }

@@ -4,6 +4,7 @@
 class game{
     public:
     game();
-    private
+    void blackJack();
+    private:
     deck D;
 };
